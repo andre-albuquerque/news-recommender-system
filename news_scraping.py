@@ -5,6 +5,7 @@ from selenium.webdriver.chrome.options import Options
 from time import sleep
 import pandas as pd
 import mysql.connector
+import keyring
 
 
 # Comandos para criar o database e as tabelas no MySQL
@@ -12,7 +13,7 @@ import mysql.connector
 """ mydb = mysql.connector.connect(
 host="localhost",
 user="root",
-passwd="1234",
+passwd= "1234",
 database="noticias"
 )
 print(mydb)
@@ -32,18 +33,24 @@ mycursor.execute("CREATE DATABASE noticias")"""
 
 # mycursor.execute(tabela_g1)
 
+# tabela_gnews = """CREATE TABLE estadao (titulo VARCHAR(255), tempo VARCHAR(100), 
+# link VARCHAR(1000), img VARCHAR(500))"""
+
+# mycursor.execute(tabela_estadao)
+
 
 
 def scraping():
     """
-    Função para fazer scraping de notícias dos sites G1, Google News salvando em banco de dados MySQL.
+    Função para fazer scraping de notícias dos portais G1, Estadão e Google News salvando em banco de dados MySQL.
 
     Criado por André de Albuquerque (andrealbuquerqueleo@gmail.com)
 
     """
-
     print('Iniciando scraping do site G1. Isto pode demorar um pouco...')
 
+    
+    # opções do método Selenium | --headless não abre nagevador
     options = Options()
     options.add_argument('--headless')
     options.add_argument('windows size = 400,800')
@@ -52,8 +59,10 @@ def scraping():
     driver.get("https://g1.globo.com/")
     sleep(2)
 
+    # botão 'veja mais' do site G1
     element = driver.find_element_by_xpath("//*[@id='feed-placeholder']/div/div/div[3]/a")
 
+    # loop para dar scroll na página e clicar no botão 'veja mais'
     for j in range (3):
         for i in range(4):
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -61,15 +70,18 @@ def scraping():
 
         element.click()
 
+    # obter o html do site com o BeautifulSoup
     site_g1 = BeautifulSoup(driver.page_source, 'html.parser')
     driver.quit()
 
-    print('Buscando notícias...')
+    print('Buscando notícias e salvando em lista...')
 
+    # Busca todas as notícias na página principal
     noticias = site_g1.find_all('div', attrs={'class': "feed-post-body"})
 
-    lista_noticias = []
+    lista_noticias_g1 = []
     
+    # Loop para obter todos os elementos de cada notícia
     for noticia in noticias:    
 
         dados_noticias = []
@@ -100,47 +112,27 @@ def scraping():
             dados_noticias.append("")
         
             
-        lista_noticias.append(dados_noticias)
+        lista_noticias_g1.append(dados_noticias)
 
-    print('Salvando...')
-
-    mydb = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    passwd="1234",
-    database="noticias"
-    )
-
-    mycursor = mydb.cursor()
-
-    mycursor.execute("TRUNCATE TABLE g1")         
-                
-    comando_sql = """INSERT INTO g1 (titulo, subtitulo, tempo, link, img) 
-                VALUES (%s, %s, %s, %s, %s)"""
-
-    dados_g1  = lista_noticias         
-
-    mycursor.executemany(comando_sql, dados_g1)
-
-    mydb.commit()
-
-    print("Salvo.")
     sleep(1.5)
 
+    # scraping do google news
     print('Iniciando scraping do site Google News...')
 
-    # scraping do google news
-
+    # acessa o site do Google News
     html = requests.get("https://news.google.com/topics/CAAqKggKIiRDQkFTRlFvSUwyMHZNRFZxYUdjU0JYQjBMVUpTR2dKQ1VpZ0FQAQ?hl=pt-BR&gl=BR&ceid=BR%3Apt-419")
 
+    # obtem o html do site
     site_gnews = BeautifulSoup(html.content, "html.parser")
 
-    print('Buscando notícias...')
+    print('Buscando notícias e salvando em lista...')
 
+    # obtem todas as noticias do tipo 1 
     noticias_1 = site_gnews.find_all('div', attrs={'class':'xrnccd F6Welf R7GTQ keNKEd j7vNaf'})
 
     lista_noticias_gnews = []
 
+    # Loop para obter todos os elementos de cada notícia
     for noticia in noticias_1:
 
         dados_noticias_1 = []
@@ -168,9 +160,10 @@ def scraping():
             
         lista_noticias_gnews.append(dados_noticias_1)
         
-
+    # obtem todas as notícias do tipo 2
     noticias_2 = site_gnews.find_all('div', attrs={'class':'NiLAwe y6IFtc R7GTQ keNKEd j7vNaf nID9nc'})
-                    
+    
+    # Loop para obter todos os elementos de cada notícia
     for noticia in noticias_2:
         
         dados_noticias_2 = []
@@ -198,45 +191,25 @@ def scraping():
             
         lista_noticias_gnews.append(dados_noticias_2)
 
-    print('Salvando...')
-
-    mydb = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    passwd="1234",
-    database="noticias"
-    )
-
-    mycursor = mydb.cursor()
-
-    mycursor.execute("TRUNCATE TABLE gnews") 
-                
-    comando_sql_gnews = """INSERT INTO gnews (titulo, tempo, link, img) 
-                            VALUES (%s, %s, %s, %s)"""
-
-    mycursor = mydb.cursor()
-
-    dados = lista_noticias_gnews 
-
-    mycursor.executemany(comando_sql_gnews, dados)
-
-    mydb.commit()
-
-    print("Salvo.")
     sleep(1.5)
 
+    # scraping do site Estadão
     print('Iniciando scraping do site Estadão...')
 
-    html_estadao = requests.get("https://www.estadao.com.br/ultimas,50")
+    # acessa o site do Google News
+    html_estadao = requests.get("https://www.estadao.com.br/ultimas")
 
+    # obtem o html do site
     site_estadao = BeautifulSoup(html_estadao.content, "html.parser")
 
-    print('Buscando notícias...')
+    print('Buscando notícias e salvando em lista...')
 
+    # Obtendo todas as notícias da página
     noticias_est = site_estadao.find_all('section', attrs={'class':'col-md-12 col-sm-12 col-xs-12 init item-lista'})
 
     lista_noticias_estadao = []
 
+    # Loop para obter todos os elementos de cada notícia e salvar em uma lista
     for noticia in noticias_est:
 
         dados_noticias_est = []
@@ -270,8 +243,11 @@ def scraping():
 
         lista_noticias_estadao.append(dados_noticias_est)
 
-    print('Salvando...')
+    print('Salvando no banco de dados...')
 
+    # salvando no banco de dados
+
+    # realizando conexão com o banco de dados MySQL
     mydb = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -281,19 +257,41 @@ def scraping():
 
     mycursor = mydb.cursor()
 
+    # apagando conteúdo anteriores nas tabelas para evitar noticias antigas ou repetidas
+    mycursor.execute("TRUNCATE TABLE g1") 
+
+    mycursor.execute("TRUNCATE TABLE gnews")
+
     mycursor.execute("TRUNCATE TABLE estadao") 
+
+
+    # comando SQL para inserir os elementos das notícias nas tabelas
+    comando_sql_g1 = """INSERT INTO g1 (titulo, subtitulo, tempo, link, img) 
+            VALUES (%s, %s, %s, %s, %s)"""
+
+    comando_sql_gnews = """INSERT INTO gnews (titulo, tempo, link, img) 
+                        VALUES (%s, %s, %s, %s)"""
 
     comando_sql_estadao = """INSERT INTO estadao (titulo, subtitulo, tempo, link, img) 
                             VALUES (%s, %s, %s, %s, %s)"""
 
     mycursor = mydb.cursor()
 
-    dados = lista_noticias_estadao 
+    dados_g1  = lista_noticias_g1       
 
-    mycursor.executemany(comando_sql_estadao, dados)
+    dados_gnews = lista_noticias_gnews  
+
+    dados_estadao = lista_noticias_estadao 
+
+    mycursor.executemany(comando_sql_g1, dados_g1)
+
+    mycursor.executemany(comando_sql_gnews, dados_gnews)
+
+    mycursor.executemany(comando_sql_estadao, dados_estadao)
 
     mydb.commit()
 
+    # fechando conexão com banco de dados
     mydb.close()
 
     sleep(1)
