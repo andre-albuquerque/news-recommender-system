@@ -33,7 +33,7 @@ mycursor.execute("CREATE DATABASE noticias")"""
 
 # mycursor.execute(tabela_g1)
 
-# tabela_gnews = """CREATE TABLE estadao (titulo VARCHAR(255), tempo VARCHAR(100), 
+# tabela_gnews = """CREATE TABLE estadao (titulo VARCHAR(255), subtitulo VARCHAR(255), tempo VARCHAR(100), 
 # link VARCHAR(1000), img VARCHAR(500))"""
 
 # mycursor.execute(tabela_estadao)
@@ -249,9 +249,10 @@ def scraping():
 
     # realizando conexão com o banco de dados MySQL
     mydb = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    passwd="1234",
+    host="database-1.cpqjjsrzpykc.us-east-2.rds.amazonaws.com",
+    user="admin",
+    port="3306",
+    passwd="Andre.2021",
     database="noticias"
     )
 
