@@ -298,7 +298,6 @@ def scraping():
     print("Pronto.")
     sleep(1)
 
-=======
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -600,6 +599,5 @@ def scraping():
     sleep(1)
     print("Pronto.")
     sleep(1)
-
->>>>>>> b5089261ddc5601cf36684e51973dcda2c67de9a
+    
     print('Processo finalizado!')
