@@ -1,3 +1,4 @@
+from socket import socketpair
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -22,23 +23,10 @@ mycursor = mydb.cursor()
 
 mycursor.execute("CREATE DATABASE noticias")"""
 
-
-# tabela_gnews = """CREATE TABLE gnews (titulo VARCHAR(255), tempo VARCHAR(100), 
+# tabela_news = """CREATE TABLE news (titulo VARCHAR(255), subtitulo VARCHAR(255), tempo VARCHAR(100), 
 # link VARCHAR(1000), img VARCHAR(500))"""
 
-# mycursor.execute(tabela_gnews)
-
-# tabela_g1 = """CREATE TABLE g1 (titulo VARCHAR(255), subtitulo VARCHAR(255), tempo VARCHAR(100), 
-#                  link VARCHAR(255), img VARCHAR(500))"""
-
-# mycursor.execute(tabela_g1)
-
-# tabela_gnews = """CREATE TABLE estadao (titulo VARCHAR(255), subtitulo VARCHAR(255), tempo VARCHAR(100), 
-# link VARCHAR(1000), img VARCHAR(500))"""
-
-# mycursor.execute(tabela_estadao)
-
-
+# mycursor.execute(tabela_news)
 
 def scraping():
     """
@@ -91,6 +79,7 @@ def scraping():
         link = noticia.find('div', attrs={'class':'_b'}).find('a')
         resumo = noticia.find('div', attrs={'class':'feed-post-body-resumo'})
         tempo = noticia.find('span', attrs={'class':'feed-post-datetime'})
+        fonte = "G1"
     
         dados_noticias.append(titulo.text) 
         
@@ -111,7 +100,8 @@ def scraping():
         except: 
             dados_noticias.append("")
         
-            
+        dados_noticias.append(fonte)
+
         lista_noticias_g1.append(dados_noticias)
 
     sleep(1.5)
@@ -139,26 +129,39 @@ def scraping():
 
         titulo = noticia.find('a', attrs={'class':'DY5T1d RZIKme'}).text
 
+        subtitulo = ""
+
         tempo = noticia.time
 
         link = noticia.a['href']
     
         img = noticia.img
-            
 
-        dados_noticias_1.append(titulo)    
-        
-        try:
-            dados_noticias_1.append(tempo.text)
-        except:
-            dados_noticias_1.append("")
-        
-        dados_noticias_1.append('news.google.com' + link[1:])
+        fonte = noticia.find('a', attrs={'class':'wEwyrc AVN2gc uQIVzc Sksgp'}).text
 
-        dados_noticias_1.append(img['src'])
-        
+        # condição para evitar notícias repetidas no banco de dados
+                    
+        if fonte == 'G1' or fonte =='Estadão':
+            continue
+
+        else:
+
+            dados_noticias_1.append(titulo)    
+
+            dados_noticias_1.append(subtitulo)
+                
+            try:
+                dados_noticias_1.append(tempo.text)
+            except:
+                dados_noticias_1.append("")
             
-        lista_noticias_gnews.append(dados_noticias_1)
+            dados_noticias_1.append('news.google.com' + link[1:])
+
+            dados_noticias_1.append(img['src'])
+
+            dados_noticias_1.append(fonte)
+            
+            lista_noticias_gnews.append(dados_noticias_1)
         
     # obtem todas as notícias do tipo 2
     noticias_2 = site_gnews.find_all('div', attrs={'class':'NiLAwe y6IFtc R7GTQ keNKEd j7vNaf nID9nc'})
@@ -170,33 +173,46 @@ def scraping():
 
         titulo = noticia.find('a', attrs={'class':'DY5T1d RZIKme'}).text
 
+        subtitulo = ""
+
         tempo = noticia.time
 
         link = noticia.a['href']
     
         img = noticia.img
-            
 
-        dados_noticias_2.append(titulo)    
-        
-        try:
-            dados_noticias_2.append(tempo.text)
-        except:
-            dados_noticias_2.append("")
-        
-        dados_noticias_2.append('news.google.com' + link[1:])
-
-        dados_noticias_2.append(img['src'])
-        
+        fonte = noticia.find('a', attrs={'class':'wEwyrc AVN2gc uQIVzc Sksgp'}).text
             
-        lista_noticias_gnews.append(dados_noticias_2)
+        # condição para evitar notícias repetidas no banco de dados
+        if fonte == 'G1' or fonte =='Estadão':
+            continue
+
+        else:       
+
+            dados_noticias_2.append(titulo)
+
+            dados_noticias_2.append(subtitulo)    
+            
+            try:
+                dados_noticias_2.append(tempo.text)
+            except:
+                dados_noticias_2.append("")
+            
+            dados_noticias_2.append('news.google.com' + link[1:])
+
+            dados_noticias_2.append(img['src'])
+
+            dados_noticias_2.append(fonte)
+            
+            lista_noticias_gnews.append(dados_noticias_2)
+
 
     sleep(1.5)
 
     # scraping do site Estadão
     print('Iniciando scraping do site Estadão...')
 
-    # acessa o site do Google News
+    # requisição do site
     html_estadao = requests.get("https://www.estadao.com.br/ultimas")
 
     # obtem o html do site
@@ -222,7 +238,7 @@ def scraping():
 
         
         dados_noticias_est.append(titulo)    
-        
+  
         try:
             dados_noticias_est.append(noticia.find('a', attrs={'class':'link-title'}).find('p').text)
         except:
@@ -240,10 +256,12 @@ def scraping():
         except:
             dados_noticias_est.append("")
 
+        dados_noticias_est.append("Estadão")
+
 
         lista_noticias_estadao.append(dados_noticias_est)
 
-    print('Salvando no banco de dados...')
+    print('Importando listas para o banco de dados...')
 
     # salvando no banco de dados
 
@@ -259,22 +277,11 @@ def scraping():
     mycursor = mydb.cursor()
 
     # apagando conteúdo anteriores nas tabelas para evitar noticias antigas ou repetidas
-    mycursor.execute("TRUNCATE TABLE g1") 
-
-    mycursor.execute("TRUNCATE TABLE gnews")
-
-    mycursor.execute("TRUNCATE TABLE estadao") 
-
+    mycursor.execute("TRUNCATE TABLE news") 
 
     # comando SQL para inserir os elementos das notícias nas tabelas
-    comando_sql_g1 = """INSERT INTO g1 (titulo, subtitulo, tempo, link, img) 
-            VALUES (%s, %s, %s, %s, %s)"""
-
-    comando_sql_gnews = """INSERT INTO gnews (titulo, tempo, link, img) 
-                        VALUES (%s, %s, %s, %s)"""
-
-    comando_sql_estadao = """INSERT INTO estadao (titulo, subtitulo, tempo, link, img) 
-                            VALUES (%s, %s, %s, %s, %s)"""
+    comando_sql_news = """INSERT INTO news (titulo, subtitulo, tempo, link, img, fonte)
+                            VALUES (%s, %s, %s, %s, %s, %s)"""
 
     mycursor = mydb.cursor()
 
@@ -284,11 +291,11 @@ def scraping():
 
     dados_estadao = lista_noticias_estadao 
 
-    mycursor.executemany(comando_sql_g1, dados_g1)
+    mycursor.executemany(comando_sql_news, dados_g1)
 
-    mycursor.executemany(comando_sql_gnews, dados_gnews)
+    mycursor.executemany(comando_sql_news, dados_gnews)
 
-    mycursor.executemany(comando_sql_estadao, dados_estadao)
+    mycursor.executemany(comando_sql_news, dados_estadao)
 
     mydb.commit()
 
