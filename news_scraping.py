@@ -6,8 +6,14 @@ from selenium.webdriver.chrome.options import Options
 from time import sleep
 import pandas as pd
 import mysql.connector
-import keyring
+import dotenv
+import os
 
+
+dotenv.load_dotenv(dotenv.find_dotenv())
+
+usuario = os.getenv("user")
+senha = os.getenv("passwd")
 
 # Comandos para criar o database e as tabelas no MySQL
 
@@ -268,9 +274,9 @@ def scraping():
     # realizando conexão com o banco de dados MySQL
     mydb = mysql.connector.connect(
     host="database-1.cpqjjsrzpykc.us-east-2.rds.amazonaws.com",
-    user="admin",
+    user=usuario,
     port="3306",
-    passwd="Andre.2021",
+    passwd=senha,
     database="noticias"
     )
 
