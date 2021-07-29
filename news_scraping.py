@@ -1,4 +1,3 @@
-from socket import socketpair
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -9,30 +8,29 @@ import mysql.connector
 import dotenv
 import os
 
-
 dotenv.load_dotenv(dotenv.find_dotenv())
 
 usuario = os.getenv("user")
 senha = os.getenv("passwd")
+address = os.getenv("host")
 
-# Comandos para criar o database e as tabelas no MySQL
+# Comandos para conectar criar o database e as tabelas no MySQL se não existir
 
-""" mydb = mysql.connector.connect(
-host="localhost",
-user="root",
-passwd= "1234",
+mydb = mysql.connector.connect(
+host=address,
+user= usuario,
+passwd= senha,
 database="noticias"
 )
-print(mydb)
 
 mycursor = mydb.cursor()
 
-mycursor.execute("CREATE DATABASE noticias")"""
+mycursor.execute("CREATE DATABASE IF NOT EXISTS noticias")
 
-# tabela_news = """CREATE TABLE news (titulo VARCHAR(255), subtitulo VARCHAR(255), tempo VARCHAR(100), 
-# link VARCHAR(1000), img VARCHAR(500))"""
+tabela_news = """CREATE TABLE IF NOT EXISTS news (titulo VARCHAR(255), subtitulo VARCHAR(255), tempo VARCHAR(100), 
+                link VARCHAR(1000), img VARCHAR(500))"""
 
-# mycursor.execute(tabela_news)
+mycursor.execute(tabela_news)
 
 def scraping():
     """
@@ -267,18 +265,8 @@ def scraping():
 
         lista_noticias_estadao.append(dados_noticias_est)
 
-    print('Importando listas para o banco de dados...')
-
     # salvando no banco de dados
-
-    # realizando conexão com o banco de dados MySQL
-    mydb = mysql.connector.connect(
-    host="database-1.cpqjjsrzpykc.us-east-2.rds.amazonaws.com",
-    user=usuario,
-    port="3306",
-    passwd=senha,
-    database="noticias"
-    )
+    print('Importando listas para o banco de dados...')
 
     mycursor = mydb.cursor()
 
