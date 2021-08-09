@@ -22,15 +22,15 @@ for linha in range(3):
 st.subheader("Manchetes mais recentes")
 st.write("___")
 
+config = {
+  'user': 'admin',
+  'password': 'Andre.2021',
+  'host': 'database-1.cpqjjsrzpykc.us-east-2.rds.amazonaws.com',
+  'database': 'noticias',
+  'raise_on_warnings': True
+}
 
-mydb = mysql.connector.connect(
-host="database-1.cpqjjsrzpykc.us-east-2.rds.amazonaws.com",
-user= "admin",
-passwd= "Andre.2021",
-database="noticias"
-)
-
-conn = mydb.cursor()
+conn = mysql.connector.connect(**config)
 
 
 # Perform query.
