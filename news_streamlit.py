@@ -3,7 +3,6 @@ import mysql.connector
 import webbrowser
 import pandas as pd
 import recommender
-import streamlit as st
 
 st.set_page_config(
      page_title="Sistema de recomendação de notícias",
