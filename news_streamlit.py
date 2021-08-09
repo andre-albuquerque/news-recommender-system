@@ -2,7 +2,7 @@ import streamlit as st
 import mysql.connector
 import webbrowser
 import pandas as pd
-import recommender
+from recommender import recommender
 
 st.set_page_config(
      page_title="Sistema de recomendação de notícias",
@@ -44,7 +44,7 @@ def noticias_recom(id=None):
     st.sidebar.header("Notícias recomendadas:")
     st.sidebar.write('___')
 
-    nr = recommender.recommender(id)
+    nr = recommender(id)
 
     df = pd.DataFrame(rows)
     

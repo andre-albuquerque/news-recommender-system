@@ -1,6 +1,5 @@
 import mysql.connector
 import pandas as pd
-from news_scraping import scraping
 from nltk.corpus import stopwords
 import gensim
 from sklearn.neighbors import NearestNeighbors
@@ -24,7 +23,6 @@ user= usuario,
 passwd= senha,
 database="noticias"
 )
-
 
 cursor = mydb.cursor()
 query = ("SELECT * FROM noticias.news")
