@@ -38,9 +38,9 @@ database=db
 
 mycursor = mydb.cursor()
 
-cur.execute("SELECT * FROM noticias.news;")
+mycursor.execute("SELECT * FROM noticias.news;")
 
-rows = cur.fetchall()
+rows = mycursor.fetchall()
 
 def noticias_recom(id=None):
 
