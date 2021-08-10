@@ -22,11 +22,11 @@ st.subheader("Manchetes mais recentes")
 st.write("___")
 
 cnx = mysql.connector.connect(
-    host="database-1.cpqjjsrzpykc.us-east-2.rds.amazonaws.com",
-    port=3306,
-    user="admin",
-    password="Andre.2021",
-    database = "noticias")
+    host="DB_HOST",
+    port="DB_PORT",
+    user="DB_USERNAME",
+    password="DB_PASSWORD",
+    database="DB_DATABASE")
 
 cur = cnx.cursor()
 
