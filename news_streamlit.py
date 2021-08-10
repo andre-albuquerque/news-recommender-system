@@ -22,12 +22,18 @@ for linha in range(3):
 st.subheader("Manchetes mais recentes")
 st.write("___")
 
+host = os.environ.get("DB_HOST")
+user= os.environ.get("DB_USERNAME")
+password = os.environ.get("DB_PASSWORD")
+db = os.environ.get("DB_DATABASE")
+
+# Comandos para conectar criar o database e as tabelas no MySQL se não existir
+
 mydb = mysql.connector.connect(
-host="database-1.c4f75fob2no8.us-west-2.rds.amazonaws.com",
-port=3306,
-user="admin",
-password="Andre.2021",
-database = "noticias"
+host=host,
+user=user,
+passwd=password,
+database=db
 )
 
 mycursor = mydb.cursor()
