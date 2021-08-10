@@ -12,8 +12,11 @@ st.set_page_config(
      initial_sidebar_state="auto")
 
 st.markdown("<h1 style='text-align: center; color: red;'>Sistema de recomendação de notícias</h1>", unsafe_allow_html=True)
+st.write(" ")
 st.markdown("<h4 style='text-align: left;'>Autor: André de Albuquerque</h4>", unsafe_allow_html=True)
+st.write(" ")
 st.markdown("[Linkedin](https://www.linkedin.com/in/andr%C3%A9-albuquerque-/)")
+st.markdown("[E-mail](mailto:andrealbuquerqueleo@gmail.com)")
 st.markdown("[Código do projeto](https://github.com/andre-albuquerque/recommender-system)")
 for linha in range(3):
     st.write(" ")
