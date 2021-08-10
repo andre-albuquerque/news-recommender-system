@@ -12,7 +12,7 @@ st.set_page_config(
      initial_sidebar_state="auto")
 
 st.markdown("<h1 style='text-align: center; color: red;'>Sistema de recomendação de notícias</h1>", unsafe_allow_html=True)
-st.markdown("<h4 style='text-align: center;'>Criado por André de Albuquerque</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: left;'>Autor: André de Albuquerque</h4>", unsafe_allow_html=True)
 st.markdown("[Linkedin](https://www.linkedin.com/in/andr%C3%A9-albuquerque-/)")
 st.markdown("[Código do projeto](https://github.com/andre-albuquerque/recommender-system)")
 for linha in range(3):
@@ -22,18 +22,12 @@ for linha in range(3):
 st.subheader("Manchetes mais recentes")
 st.write("___")
 
-host = os.environ.get("DB_HOST")
-user= os.environ.get("DB_USERNAME")
-password = os.environ.get("DB_PASSWORD")
-db = os.environ.get("DB_DATABASE")
-
-# Comandos para conectar criar o database e as tabelas no MySQL se não existir
-
 mydb = mysql.connector.connect(
-host=host,
-user=user,
-passwd=password,
-database=db
+host="database-1.c4f75fob2no8.us-west-2.rds.amazonaws.com",
+port=3306,
+user="admin",
+password="Andre.2021",
+database = "noticias"
 )
 
 mycursor = mydb.cursor()
@@ -59,25 +53,25 @@ def noticias_recom(id=None):
                 pass
             else:
                 st.sidebar.markdown(df.loc[j][2])
-            st.sidebar.markdown(f"###### ***{df.loc[j][6]}*** - {df.loc[j][3]}")   
+            st.sidebar.markdown(f"###### ***{df.loc[j][4]}*** - {df.loc[j][3]}")   
             st.sidebar.write(" ")
             if st.sidebar.button("Clique aqui para acessar a notícia", key=str(1+p)):
-                webbrowser.open_new_tab(df.loc[j][4])         
+                webbrowser.open_new_tab(df.loc[j][5])         
 
             st.sidebar.markdown("___")
 
         else:
             st.sidebar.markdown(f"## {df.loc[j][1]}", unsafe_allow_html=True)
-            st.sidebar.image(f"{df.loc[j][5]}", use_column_width="always")
+            st.sidebar.image(f"{df.loc[j][6]}", use_column_width="always")
             if df.loc[j][2] == "":
                 st.sidebar.write(" ")
                 pass
             else:
                 st.sidebar.markdown(df.loc[j][2])
-            st.sidebar.markdown(f"###### ***{df.loc[j][6]}*** - {df.loc[j][3]}")
+            st.sidebar.markdown(f"###### ***{df.loc[j][4]}*** - {df.loc[j][3]}")
             st.sidebar.write(" ")
             if st.sidebar.button("Clique aqui para acessar a notícia", key=str(100+p)):
-                webbrowser.open_new_tab(df.loc[j][4])    
+                webbrowser.open_new_tab(df.loc[j][5])    
             st.sidebar.markdown("___")
 
         p += 1
@@ -86,23 +80,23 @@ def noticias_recom(id=None):
 def dados(inicio=None, fim=None):
     n = 0
     for row in rows[(inicio):(fim)]:        
-        if row[5] == "":
+        if row[6] == "":
             st.markdown(f"## {row[1]}", unsafe_allow_html=True)
             if row[2] == "":
                 pass
             else:
                 st.markdown(row[2])
-            st.markdown(f"###### ***{row[6]}*** - {row[3]}") 
+            st.markdown(f"###### ***{row[4]}*** - {row[3]}") 
             st.write('')
             if st.button("Clique aqui para acessar a notícia", key=str(10+n)):
-                webbrowser.open_new_tab(row[4])
+                webbrowser.open_new_tab(row[5])
                 noticias_recom(id=row[0])
             st.markdown("___")  
         else:
             col1, col2 = st.beta_columns(2)
             with col1:
                 st.write(" ")
-                st.image(f"{row[5]}", use_column_width='always')
+                st.image(f"{row[6]}", use_column_width='always')
             with col2:
                 st.markdown(f"## {row[1]}", unsafe_allow_html=True)
                 if row[2] == "":
@@ -110,10 +104,10 @@ def dados(inicio=None, fim=None):
                     pass
                 else:
                     st.markdown(row[2])
-                st.markdown(f"###### ***{row[6]}*** - {row[3]}")
+                st.markdown(f"###### ***{row[4]}*** - {row[3]}")
                 st.write('')
                 if st.button("Clique aqui para acessar a notícia", key=str(200+n)):
-                    webbrowser.open_new_tab(row[4])  
+                    webbrowser.open_new_tab(row[5])  
                     noticias_recom(id=row[0])        
             st.markdown("___")
 
