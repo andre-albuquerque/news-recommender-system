@@ -17,12 +17,20 @@ address = os.getenv("host")
 
 
 
+host = os.environ.get("DB_HOST")
+user= os.environ.get("DB_USER")
+password = os.environ.get("DB_PASSWORD")
+db = os.environ.get("DB_DATABASE")
+
+# Comandos para conectar criar o database e as tabelas no MySQL se não existir
+
 mydb = mysql.connector.connect(
-host=address,
-user= usuario,
-passwd= senha,
-database="noticias"
+host= host,
+user= user,
+passwd= password,
+database=db
 )
+
 
 cursor = mydb.cursor()
 query = ("SELECT * FROM noticias.news")
