@@ -22,17 +22,18 @@ for linha in range(3):
 st.subheader("Manchetes mais recentes")
 st.write("___")
 
-host = os.environ.get("host")
-user= os.environ.get("user")
-password = os.environ.get("password")
+host = os.environ.get("DB_HOST")
+user= os.environ.get("DB_USER")
+password = os.environ.get("DB_PASSWORD")
+db = os.environ.get("DB_DATABASE")
 
 # Comandos para conectar criar o database e as tabelas no MySQL se não existir
 
 mydb = mysql.connector.connect(
-host= host,
-user= user,
-passwd= password,
-database="noticias"
+host=host,
+user=user,
+passwd=password,
+database=db
 )
 
 mycursor = mydb.cursor()
