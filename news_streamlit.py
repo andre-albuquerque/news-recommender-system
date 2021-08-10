@@ -22,24 +22,25 @@ for linha in range(3):
 st.subheader("Manchetes mais recentes")
 st.write("___")
 
-host = os.environ.get("host")
-user= os.environ.get("user")
-password = os.environ.get("password")
+host = os.environ.get("DB_HOST")
+user= os.environ.get("DB_USERNAME")
+password = os.environ.get("DB_PASSWORD")
+db = os.environ.get("DB_DATABASE")
 
 # Comandos para conectar criar o database e as tabelas no MySQL se não existir
 
 mydb = mysql.connector.connect(
-host= host,
-user= user,
-passwd= password,
-database="noticias"
+host=host,
+user=user,
+passwd=password,
+database=db
 )
 
 mycursor = mydb.cursor()
 
-cur.execute("SELECT * FROM noticias.news;")
+mycursor.execute("SELECT * FROM noticias.news;")
 
-rows = cur.fetchall()
+rows = mycursor.fetchall()
 
 def noticias_recom(id=None):
 
@@ -98,7 +99,7 @@ def dados(inicio=None, fim=None):
                 noticias_recom(id=row[0])
             st.markdown("___")  
         else:
-            col1, col2 = st.columns(2)
+            col1, col2 = st.beta_columns(2)
             with col1:
                 st.write(" ")
                 st.image(f"{row[5]}", use_column_width='always')
@@ -121,5 +122,3 @@ def dados(inicio=None, fim=None):
 
 
 dados(inicio = 0, fim=int(len(rows)))
-
-
