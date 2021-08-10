@@ -99,7 +99,7 @@ def dados(inicio=None, fim=None):
                 noticias_recom(id=row[0])
             st.markdown("___")  
         else:
-            col1, col2 = st.columns(2)
+            col1, col2 = st.beta_columns(2)
             with col1:
                 st.write(" ")
                 st.image(f"{row[5]}", use_column_width='always')
