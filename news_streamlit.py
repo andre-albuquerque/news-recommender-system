@@ -10,7 +10,6 @@ st.set_page_config(
      layout="centered",
      initial_sidebar_state="auto")
 
-
 st.markdown("<h1 style='text-align: center; color: red;'>Sistema de recomendação de notícias</h1>", unsafe_allow_html=True)
 st.markdown("<h4 style='text-align: center;'>Criado por André de Albuquerque</h4>", unsafe_allow_html=True)
 st.markdown("[Linkedin](https://www.linkedin.com/in/andr%C3%A9-albuquerque-/)")
@@ -22,26 +21,18 @@ for linha in range(3):
 st.subheader("Manchetes mais recentes")
 st.write("___")
 
-config = {
-  'user': 'admin',
-  'password': 'Andre.2021',
-  'host': 'database-1.cpqjjsrzpykc.us-east-2.rds.amazonaws.com',
-  'database': 'noticias',
-  'raise_on_warnings': True
-}
+cnx = mysql.connector.connect(
+    host="database-1.cpqjjsrzpykc.us-east-2.rds.amazonaws.com",
+    port=3306,
+    user="admin",
+    password="Andre.2021",
+    database = "noticias")
 
-conn = mysql.connector.connect(**config)
+cur = cnx.cursor()
 
+cur.execute("SELECT * FROM noticias.news;")
 
-# Perform query.
-# Uses st.cache to only rerun when the query changes or after 10 min.
-@st.cache(ttl=600)
-def run_query(query):
-    with conn.cursor() as cur:
-        cur.execute(query)
-        return cur.fetchall()
-rows = run_query("SELECT * from news ORDER BY RAND();")
-
+rows = cur.fetchall()
 
 def noticias_recom(id=None):
 
@@ -100,7 +91,7 @@ def dados(inicio=None, fim=None):
                 noticias_recom(id=row[0])
             st.markdown("___")  
         else:
-            col1, col2 = st.beta_columns(2)
+            col1, col2 = st.columns(2)
             with col1:
                 st.write(" ")
                 st.image(f"{row[5]}", use_column_width='always')
