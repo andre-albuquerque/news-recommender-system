@@ -1,6 +1,7 @@
 import mysql.connector
 import pandas as pd
 from nltk.corpus import stopwords
+import nltk
 import gensim
 from sklearn.neighbors import NearestNeighbors
 from fuzzywuzzy import process
@@ -11,17 +12,18 @@ import os
 
 dotenv.load_dotenv(dotenv.find_dotenv())
 
-usuario = os.getenv("user")
-senha = os.getenv("passwd")
-address = os.getenv("host")
+host = os.environ.get("DB_HOST")
+user= os.environ.get("DB_USERNAME")
+password = os.environ.get("DB_PASSWORD")
+db = os.environ.get("DB_DATABASE")
 
-
+# Comandos para conectar criar o database e as tabelas no MySQL se não existir
 
 mydb = mysql.connector.connect(
-host=address,
-user= usuario,
-passwd= senha,
-database="noticias"
+host= host,
+user= user,
+passwd= password,
+database=db
 )
 
 cursor = mydb.cursor()
@@ -29,6 +31,8 @@ query = ("SELECT * FROM noticias.news")
 cursor.execute(query)
 records = cursor.fetchall()
 mydb.close()
+
+nltk.download('stopwords')
 
 news_df = pd.DataFrame(records, columns=['id','titulo','subtitulo','hora','link','img', 'fonte'])
 news_df = news_df.drop(columns=['id'])
