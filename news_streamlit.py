@@ -3,6 +3,7 @@ import mysql.connector
 import webbrowser
 import pandas as pd
 from recommender import recommender
+import os
 
 st.set_page_config(
      page_title="Sistema de recomendação de notícias",
@@ -21,14 +22,20 @@ for linha in range(3):
 st.subheader("Manchetes mais recentes")
 st.write("___")
 
-cnx = mysql.connector.connect(
-    host="database-1.cpqjjsrzpykc.us-east-2.rds.amazonaws.com",
-    port=3306,
-    user="admin",
-    password="Andre.2021",
-    database="noticias")
+host = os.environ.get("host")
+user= os.environ.get("user")
+password = os.environ.get("password")
 
-cur = cnx.cursor()
+# Comandos para conectar criar o database e as tabelas no MySQL se não existir
+
+mydb = mysql.connector.connect(
+host= host,
+user= user,
+passwd= password,
+database="noticias"
+)
+
+mycursor = mydb.cursor()
 
 cur.execute("SELECT * FROM noticias.news;")
 
