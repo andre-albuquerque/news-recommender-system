@@ -13,6 +13,7 @@ import os
 dotenv.load_dotenv(dotenv.find_dotenv())
 
 
+
 host = os.environ.get("DB_HOST")
 user= os.environ.get("DB_USERNAME")
 password = os.environ.get("DB_PASSWORD")

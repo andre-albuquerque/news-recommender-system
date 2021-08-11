@@ -1,8 +1,8 @@
 import streamlit as st
 import mysql.connector
-import webbrowser
 import pandas as pd
 from recommender import recommender
+from bokeh.models.widgets import Div
 import os
 
 st.set_page_config(
@@ -25,6 +25,7 @@ for linha in range(3):
 st.subheader("Manchetes mais recentes")
 st.write("___")
 
+
 host = os.environ.get("DB_HOST")
 user= os.environ.get("DB_USERNAME")
 password = os.environ.get("DB_PASSWORD")
@@ -39,11 +40,14 @@ passwd=password,
 database=db
 )
 
+
 mycursor = mydb.cursor()
 
 mycursor.execute("SELECT * FROM noticias.news;")
 
 rows = mycursor.fetchall()
+
+
 
 def noticias_recom(id=None):
 
@@ -56,21 +60,18 @@ def noticias_recom(id=None):
     
     p = 1
     for j in nr[0]:
-        if df.loc[j][5] == "":
-            st.sidebar.markdown(f"## {df.loc[j][1]}", unsafe_allow_html=True)
+        if df.loc[j][6] == "":
+            st.sidebar.markdown(f"## [{df.loc[j][1]}]({df.loc[j][5]})", unsafe_allow_html=True)
             if (df.loc[j][2]) == "":
                 pass
             else:
                 st.sidebar.markdown(df.loc[j][2])
             st.sidebar.markdown(f"###### ***{df.loc[j][4]}*** - {df.loc[j][3]}")   
             st.sidebar.write(" ")
-            if st.sidebar.button("Clique aqui para acessar a notícia", key=str(1+p)):
-                webbrowser.open_new_tab(df.loc[j][5])         
-
             st.sidebar.markdown("___")
 
         else:
-            st.sidebar.markdown(f"## {df.loc[j][1]}", unsafe_allow_html=True)
+            st.sidebar.markdown(f"## [{df.loc[j][1]}]({df.loc[j][5]})", unsafe_allow_html=True)
             st.sidebar.image(f"{df.loc[j][6]}", use_column_width="always")
             if df.loc[j][2] == "":
                 st.sidebar.write(" ")
@@ -79,18 +80,17 @@ def noticias_recom(id=None):
                 st.sidebar.markdown(df.loc[j][2])
             st.sidebar.markdown(f"###### ***{df.loc[j][4]}*** - {df.loc[j][3]}")
             st.sidebar.write(" ")
-            if st.sidebar.button("Clique aqui para acessar a notícia", key=str(100+p)):
-                webbrowser.open_new_tab(df.loc[j][5])    
             st.sidebar.markdown("___")
 
         p += 1
+
 
 
 def dados(inicio=None, fim=None):
     n = 0
     for row in rows[(inicio):(fim)]:        
         if row[6] == "":
-            st.markdown(f"## {row[1]}", unsafe_allow_html=True)
+            st.markdown(f'## {row[1]}', unsafe_allow_html=True)
             if row[2] == "":
                 pass
             else:
@@ -98,8 +98,13 @@ def dados(inicio=None, fim=None):
             st.markdown(f"###### ***{row[4]}*** - {row[3]}") 
             st.write('')
             if st.button("Clique aqui para acessar a notícia", key=str(10+n)):
-                webbrowser.open_new_tab(row[5])
-                noticias_recom(id=row[0])
+                js = f"window.open('{row[5]}')"  # New tab or window
+                html = '<img src onerror="{}">'.format(js)
+                div = Div(text=html)
+                st.bokeh_chart(div)
+
+                noticias_recom(id=row[0])                 
+
             st.markdown("___")  
         else:
             col1, col2 = st.beta_columns(2)
@@ -107,7 +112,8 @@ def dados(inicio=None, fim=None):
                 st.write(" ")
                 st.image(f"{row[6]}", use_column_width='always')
             with col2:
-                st.markdown(f"## {row[1]}", unsafe_allow_html=True)
+                st.markdown(f'## {row[1]}', unsafe_allow_html=True)
+
                 if row[2] == "":
                     st.write(" ")
                     pass
@@ -116,8 +122,12 @@ def dados(inicio=None, fim=None):
                 st.markdown(f"###### ***{row[4]}*** - {row[3]}")
                 st.write('')
                 if st.button("Clique aqui para acessar a notícia", key=str(200+n)):
-                    webbrowser.open_new_tab(row[5])  
-                    noticias_recom(id=row[0])        
+                    js = f"window.open('{row[5]}')"
+                    html = '<img src onerror="{}">'.format(js)
+                    div = Div(text=html)
+                    st.bokeh_chart(div)
+                    noticias_recom(id=row[0])   
+
             st.markdown("___")
 
         n += 1
