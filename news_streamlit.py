@@ -86,52 +86,48 @@ def noticias_recom(id=None):
 
 
 
-def dados(inicio=None, fim=None):
-    n = 0
-    for row in rows[(inicio):(fim)]:        
-        if row[6] == "":
-            st.markdown(f'## {row[1]}', unsafe_allow_html=True)
-            if row[2] == "":
-                pass
-            else:
-                st.markdown(row[2])
-            st.markdown(f"###### ***{row[4]}*** - {row[3]}") 
-            st.write('')
-            if st.button("Clique aqui para acessar a notícia", key=str(10+n)):
-                js = f"window.open('{row[5]}')"  # New tab or window
-                html = '<img src onerror="{}">'.format(js)
-                div = Div(text=html)
-                st.bokeh_chart(div)
+n = 0
+for row in rows[(inicio):(fim)]:        
+   if row[6] == "":
+       st.markdown(f'## {row[1]}', unsafe_allow_html=True)
+       if row[2] == "":
+           pass
+       else:
+           st.markdown(row[2])
+       st.markdown(f"###### ***{row[4]}*** - {row[3]}") 
+       st.write('')
+       if st.button("Clique aqui para acessar a notícia", key=str(10+n)):
+           js = f"window.open('{row[5]}')"  # New tab or window
+           html = '<img src onerror="{}">'.format(js)
+           div = Div(text=html)
+           st.bokeh_chart(div)
 
-                noticias_recom(id=row[0])                 
+           noticias_recom(id=row[0])                 
 
-            st.markdown("___")  
-        else:
-            col1, col2 = st.beta_columns(2)
-            with col1:
-                st.write(" ")
-                st.image(f"{row[6]}", use_column_width='always')
-            with col2:
-                st.markdown(f'## {row[1]}', unsafe_allow_html=True)
+       st.markdown("___")  
+   else:
+       col1, col2 = st.beta_columns(2)
+       with col1:
+           st.write(" ")
+           st.image(f"{row[6]}", use_column_width='always')
+       with col2:
+           st.markdown(f'## {row[1]}', unsafe_allow_html=True)
 
-                if row[2] == "":
-                    st.write(" ")
-                    pass
-                else:
-                    st.markdown(row[2])
-                st.markdown(f"###### ***{row[4]}*** - {row[3]}")
-                st.write('')
-                if st.button("Clique aqui para acessar a notícia", key=str(200+n)):
-                    js = f"window.open('{row[5]}')"
-                    html = '<img src onerror="{}">'.format(js)
-                    div = Div(text=html)
-                    st.bokeh_chart(div)
-                    noticias_recom(id=row[0])   
+           if row[2] == "":
+               st.write(" ")
+               pass
+           else:
+               st.markdown(row[2])
+           st.markdown(f"###### ***{row[4]}*** - {row[3]}")
+           st.write('')
+           if st.button("Clique aqui para acessar a notícia", key=str(200+n)):
+               js = f"window.open('{row[5]}')"
+               html = '<img src onerror="{}">'.format(js)
+               div = Div(text=html)
+               st.bokeh_chart(div)
+               
+               noticias_recom(id=row[0])   
 
-            st.markdown("___")
+       st.markdown("___")
 
-        n += 1
-    return None
-
-
-dados(inicio = 0, fim=int(len(rows)))
+   n += 1
