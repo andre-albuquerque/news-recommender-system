@@ -47,6 +47,8 @@ mycursor.execute("SELECT * FROM noticias.news;")
 
 rows = mycursor.fetchall()
 
+mydb.close()
+
 
 
 def noticias_recom(id=None):
