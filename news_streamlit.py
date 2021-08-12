@@ -87,7 +87,7 @@ def noticias_recom(id=None):
 
 
 n = 0
-for row in rows[(inicio):(fim)]:        
+for row in rows:        
    if row[6] == "":
        st.markdown(f'## {row[1]}', unsafe_allow_html=True)
        if row[2] == "":
