@@ -5,11 +5,13 @@ from recommender import recommender
 from bokeh.models.widgets import Div
 import os
 
+#configurações principais da página
 st.set_page_config(
      page_title="Sistema de recomendação de notícias",
      page_icon="https://freepngimg.com/thumb/newspaper/8-2-newspaper-png.png",
      layout="centered",
      initial_sidebar_state="auto")
+
 
 st.markdown("<h1 style='text-align: center; color: red;'>Sistema de recomendação de notícias</h1>", unsafe_allow_html=True)
 st.write(" ")
@@ -25,21 +27,19 @@ for linha in range(3):
 st.subheader("Manchetes mais recentes")
 st.write("___")
 
-
+# obtém os dados do banco de dados nas variáveis de ambiente da plataforma Heroku
 host = os.environ.get("DB_HOST")
 user= os.environ.get("DB_USERNAME")
 password = os.environ.get("DB_PASSWORD")
 db = os.environ.get("DB_DATABASE")
 
-# Comandos para conectar criar o database e as tabelas no MySQL se não existir
-
+# Comandos para conectar, criar o database e as tabelas no MySQL, se não existir
 mydb = mysql.connector.connect(
 host=host,
 user=user,
 passwd=password,
 database=db
 )
-
 
 mycursor = mydb.cursor()
 
@@ -50,7 +50,7 @@ rows = mycursor.fetchall()
 mydb.close()
 
 
-
+#função para obter as noticias recomendadas
 def noticias_recom(id=None):
 
     st.sidebar.header("Notícias recomendadas:")
@@ -88,6 +88,7 @@ def noticias_recom(id=None):
 
 
 
+#exibe as notícias obtidas do banco de dados
 n = 0
 for row in rows:        
    if row[6] == "":
@@ -99,7 +100,7 @@ for row in rows:
        st.markdown(f"###### ***{row[4]}*** - {row[3]}") 
        st.write('')
        if st.button("Clique aqui para acessar a notícia", key=str(10+n)):
-           js = f"window.open('{row[5]}')"  # New tab or window
+           js = f"window.open('{row[5]}')"  #abre o link em nova aba
            html = '<img src onerror="{}">'.format(js)
            div = Div(text=html)
            st.bokeh_chart(div)
