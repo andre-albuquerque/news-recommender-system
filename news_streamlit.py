@@ -43,7 +43,7 @@ database=db
 
 mycursor = mydb.cursor()
 
-mycursor.execute("SELECT * FROM noticias.news;")
+mycursor.execute(f"SELECT * FROM {db}.news;")
 
 rows = mycursor.fetchall()
 
