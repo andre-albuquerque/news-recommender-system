@@ -29,7 +29,7 @@ database=db
 
 #obter a lista de noticias do banco de dados
 cursor = mydb.cursor()
-query = ("SELECT * FROM noticias.news")
+query = ("SELECT * FROM heroku_576c1dba8f92409.news")
 cursor.execute(query)
 records = cursor.fetchall()
 mydb.close()
