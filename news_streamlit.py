@@ -43,7 +43,7 @@ database=db
 
 mycursor = mydb.cursor()
 
-mycursor.execute("SELECT * FROM heroku_576c1dba8f92409.news;")
+mycursor.execute(f"SELECT * FROM {db}.news;")
 
 rows = mycursor.fetchall()
 
