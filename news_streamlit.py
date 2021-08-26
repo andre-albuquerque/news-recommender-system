@@ -32,18 +32,20 @@ host = os.environ.get("DB_HOST")
 user= os.environ.get("DB_USERNAME")
 password = os.environ.get("DB_PASSWORD")
 db = os.environ.get("DB_DATABASE")
+port = os.environ.get("DB_PORT")
 
 # Comandos para conectar, criar o database e as tabelas no MySQL, se não existir
 mydb = mysql.connector.connect(
 host=host,
 user=user,
 passwd=password,
-database=db
+database=db,
+port=port
 )
 
 mycursor = mydb.cursor()
 
-mycursor.execute("SELECT * FROM noticias.news;")
+mycursor.execute(f"SELECT * FROM {db}.news;")
 
 rows = mycursor.fetchall()
 

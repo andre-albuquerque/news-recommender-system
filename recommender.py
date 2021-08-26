@@ -13,23 +13,25 @@ import os
 dotenv.load_dotenv(dotenv.find_dotenv())
 
 
-#variáveis de ambiente com os dados para se conectar ao banco de dados MySQL no AWS
+#variáveis de ambiente com os dados para se conectar ao banco de dados MySQL
 host = os.environ.get("DB_HOST")
 user= os.environ.get("DB_USERNAME")
 password = os.environ.get("DB_PASSWORD")
 db = os.environ.get("DB_DATABASE")
+port = os.environ.get("DB_PORT")
 
 # Comandos para conectar ao MySQL
 mydb = mysql.connector.connect(
 host=host,
 user=user,
 passwd=password,
-database=db
+database=db,
+port = port
 )
 
 #obter a lista de noticias do banco de dados
 cursor = mydb.cursor()
-query = ("SELECT * FROM noticias.news")
+query = (f"SELECT * FROM {db}.news")
 cursor.execute(query)
 records = cursor.fetchall()
 mydb.close()
@@ -69,6 +71,10 @@ lista = []
 
 #função para recomendar as notícias
 def recommender(id):
+    """
+    Esta função retorna uma lista de índices do dataframe referente as notícias recomendadas.
+    """
+
     lista.clear()
 
     #treina o modelo na base de dados
